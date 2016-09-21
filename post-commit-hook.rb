@@ -3,7 +3,7 @@
 require 'git'
 
 git = Git.open('/Users/jim/Programs/jekyll-commit-blog')
-raw = git.log[0].message.match(/^\[BLOG\](.*)/)
+raw = git.log[0].message.match(/^\[BLOG\](.*)/m)
 author = git.log[0].author.name
 datetime = git.log[0].date.strftime("%Y-%m-%d %H:%M:%S")
 
