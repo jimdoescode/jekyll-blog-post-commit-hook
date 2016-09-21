@@ -3,4 +3,5 @@
 require 'git'
 
 g = Git.open('/Users/jim/Programs/jekyll-commit-blog')
-g.log.each { |l| puts l.author.name }
+puts g.log[0].message
+puts g.log[0].author.name
