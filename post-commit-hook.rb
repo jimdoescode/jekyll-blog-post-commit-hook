@@ -3,10 +3,11 @@
 require 'cgi'
 require 'git'
 
+# Expectation is that this file resides in project/.git/hooks
 root = File.expand_path(File.dirname(__FILE__)) + '/../../'
 git = Git.open(root)
 commit = git.log[0]
-raw = commit.message.match(/^(.*)\{BLOG(.*?)\}$/im)
+raw = commit.message.match(/^(.*)\{BLOG(.*?)\}\s*$/im)
 
 # If they didn't use the BLOG 
 # keyword then nothing to do 
@@ -25,7 +26,7 @@ parts = body.match(/^(.*?)(?:\r|\n|\r\n){2}(.*)$/m);
 
 # If we can't separate a title from the body then just use the first 60 chars of the body
 title = body[0...60].strip
-unless parts.nil? || parts.length < 3
+if !parts.nil? && parts.length >= 3
     title = parts[1].strip
     body = parts[2].strip
 end
@@ -37,9 +38,9 @@ puts "Creating Jekyll file #{filename}"
 # These can be overwritten by set values.
 frontmatter = {
     "layout" => "post",
-    "author" => commit.author.name,
+    "author" => "\"#{commit.author.name}\"",
     "title" => "\"#{title}\"",
-    "date" => commit.date.strftime("%Y-%m-%d %H:%M:%S"),
+    "date" => '"' + commit.date.strftime("%Y-%m-%d %H:%M:%S") + '"',
 }.merge(params)
 
 post = File.open(filename, 'w+')
