@@ -5,7 +5,7 @@ require 'git'
 
 root = File.expand_path(File.dirname(__FILE__)) + '/../../'
 git = Git.open(root)
-raw = git.log[0].message.match(/^\{BLOG(.*?)\}(.*)$/im)
+raw = git.log[0].message.match(/^(.*)\{BLOG(.*?)\}$/im)
 
 # If they didn't use the BLOG 
 # keyword then nothing to do 
@@ -13,11 +13,11 @@ exit 0 if raw.nil?
 
 # Look for extra parameters that should
 # be put in the post front matter.
-params = raw[1].empty? ? {} : CGI::parse(raw[1].strip)
+params = raw[2].empty? ? {} : CGI::parse(raw[2].strip)
 params.each { |k, v| params[k] = v[0] if v.is_a?(Array) }
 
 # Set the blog post body
-body = raw[2].strip
+body = raw[1].strip
 
 # Attempt to separate a title from the body
 parts = body.match(/^(.*?)(?:\r|\n|\r\n){2}(.*)$/m);
