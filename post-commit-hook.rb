@@ -5,7 +5,8 @@ require 'git'
 
 root = File.expand_path(File.dirname(__FILE__)) + '/../../'
 git = Git.open(root)
-raw = git.log[0].message.match(/^(.*)\{BLOG(.*?)\}$/im)
+commit = git.log[3]
+raw = commit.message.match(/^(.*)\{BLOG(.*?)\}$/im)
 
 # If they didn't use the BLOG 
 # keyword then nothing to do 
@@ -23,8 +24,12 @@ body = raw[1].strip
 parts = body.match(/^(.*?)(?:\r|\n|\r\n){2}(.*)$/m);
 
 # If we can't separate a title from the body then just use the first 60 chars of the body
-title = (parts.nil? || parts.length < 3) ? body[0...60].strip : parts[1].strip 
-filename = git.log[0].date.strftime("%Y-%m-%d") + '-' + title.downcase.strip.gsub(' ', '-').gsub(/[^\w-]/, '') + '.md'
+title = body[0...60].strip
+unless parts.nil? || parts.length < 3
+    title = parts[1].strip
+    body = parts[2].strip
+end
+filename = git.log[0].date.strftime("%Y-%m-%d") + '-' + title.downcase.gsub(' ', '-').gsub(/[^\w-]/, '') + '.md'
 
 puts "Creating Jekyll file #{filename}"
 
@@ -32,9 +37,9 @@ puts "Creating Jekyll file #{filename}"
 # These can be overwritten by set values.
 frontmatter = {
     "layout" => "post",
-    "author" => git.log[0].author.name,
+    "author" => commit.author.name,
     "title" => "\"#{title}\"",
-    "date" => git.log[0].date.strftime("%Y-%m-%d %H:%M:%S"),
+    "date" => commit.date.strftime("%Y-%m-%d %H:%M:%S"),
 }.merge(params)
 
 post = File.open(filename, 'w+')
