@@ -1,3 +1,4 @@
 *.komodoproject
 *.md
 .DS_Store
+!README.md
