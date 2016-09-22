@@ -5,7 +5,7 @@ require 'git'
 
 root = File.expand_path(File.dirname(__FILE__)) + '/../../'
 git = Git.open(root)
-commit = git.log[3]
+commit = git.log[0]
 raw = commit.message.match(/^(.*)\{BLOG(.*?)\}$/im)
 
 # If they didn't use the BLOG 
