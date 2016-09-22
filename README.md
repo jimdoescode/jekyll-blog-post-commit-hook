@@ -16,6 +16,6 @@ This will make sure that the necessary gems are installed and then will prompt y
 Usage
 -----
 
-Once you have the hook installed you can make commits as you would normally and any commit message that *ends* with `{BLOG}` will have a markdown file generated for it in the project directory. You can optionally add front matter to your posts by specifying it in the blog tag like this `{BLOG tags=[foo, bar]&layout=test}`.
+Once you have the hook installed you can make commits as you would normally and any commit message that **ends** with `{BLOG}` will have a markdown file generated for it in the project directory. You can optionally add front matter to your posts by specifying it in the blog tag like this `{BLOG tags=[foo, bar]&layout=test}`.
 
 I hope you have some fun with this!
