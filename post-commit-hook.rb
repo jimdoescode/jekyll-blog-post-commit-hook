@@ -3,8 +3,9 @@
 require 'cgi'
 require 'git'
 
-git = Git.open('/Users/jim/Programs/jekyll-commit-blog')
-raw = git.log[0].message.match(/^\{BLOG(.*)\}(.*)$/im)
+root = File.expand_path(File.dirname(__FILE__)) + '/../../'
+git = Git.open(root)
+raw = git.log[0].message.match(/^\{BLOG(.*?)\}(.*)$/im)
 
 # If they didn't use the BLOG 
 # keyword then nothing to do 
@@ -19,11 +20,13 @@ params.each { |k, v| params[k] = v[0] if v.is_a?(Array) }
 body = raw[2].strip
 
 # Attempt to separate a title from the body
-parts = body.match(/^(.*)(?:\r|\n|\r\n){2}(.*)$/m);
+parts = body.match(/^(.*?)(?:\r|\n|\r\n){2}(.*)$/m);
 
 # If we can't separate a title from the body then just use the first 60 chars of the body
 title = (parts.nil? || parts.length < 3) ? body[0...60].strip : parts[1].strip 
-slug = git.log[0].date.strftime("%Y-%m-%d") + '-' + title.downcase.strip.gsub(' ', '-').gsub(/[^\w-]/, '')
+filename = git.log[0].date.strftime("%Y-%m-%d") + '-' + title.downcase.strip.gsub(' ', '-').gsub(/[^\w-]/, '') + '.md'
+
+puts "Creating Jekyll file #{filename}"
 
 # Add some default front matter fields.
 # These can be overwritten by set values.
@@ -34,7 +37,7 @@ frontmatter = {
     "date" => git.log[0].date.strftime("%Y-%m-%d %H:%M:%S"),
 }.merge(params)
 
-post = File.open(slug + '.md', 'w+')
+post = File.open(filename, 'w+')
 post.puts('---')
 frontmatter.each { |k, v| post.puts "#{k}: #{v}" }
 post.puts('---')
