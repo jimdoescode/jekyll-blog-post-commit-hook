@@ -1,6 +1,6 @@
 hook_file := post-commit-hook.rb
 
-.PHONY: $(hook_file) gem-install install setup run
+.PHONY: $(hook_file) gem-install install
 install: gem-install $(hook_file)
 
 gem-install:
