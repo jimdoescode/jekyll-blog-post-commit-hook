@@ -23,7 +23,7 @@ You can also specify a second parameter which indicates a specific commit. You c
 $ post-commit /path/to/project HEAD~
 $ post-commit /path/to/project 123abc
 ```
-*NOTE* If you specify a commit then you don't need to have a `{BLOG}` tag at the end of the commit message.
+*NOTE:* If you specify a commit then a Jekyll file will be generated regardless of if a `{BLOG}` tag is at the end of the commit message.
 
 Installation as a commit hook
 -----------------------------
