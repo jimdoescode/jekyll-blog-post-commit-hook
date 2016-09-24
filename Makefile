@@ -1,12 +1,12 @@
-hook_file := post-commit-hook.rb
+hook_file := post-commit
 
-.PHONY: $(hook_file) gem-install install
-install: gem-install $(hook_file)
+.PHONY: $(hook_file) install-dependencies install-hook
+install-hook: check-dependencies $(hook_file)
 
-gem-install:
+check-dependencies:
 	@gem install git
     
-$(hook_file): gem-install
+$(hook_file): check-dependencies
 	@read -p "Enter the full path to your project directory: " dir; \
 	hook_dir=$$dir/.git/hooks; \
 	cp -f $@ $$hook_dir/post-commit; \
