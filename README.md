@@ -13,17 +13,22 @@ You can run the command in the current directory for the latest commit like this
 $ post-commit
 ```
 
-If you'd rather run the command in another project then you can specify the project directory as the first arguement
+If you'd rather run the command in another project then you can specify the project directory using the `-p` option
 ```sh
-$ post-commit /path/to/project
+$ post-commit -p /path/to/project
 ```
 
-You can also specify a second parameter which indicates a specific commit. You can either use the full or partial commit hash or the HEAD offset.
+You can specify a commit using the `-c` option. You can either use the full or partial commit hash or the HEAD offset.
 ```sh
-$ post-commit /path/to/project HEAD~
-$ post-commit /path/to/project 123abc
+$ post-commit -c HEAD~
+$ post-commit -c 123abc
 ```
 *NOTE:* If you specify a commit then a Jekyll file will be generated regardless of if a `{BLOG}` tag is at the end of the commit message.
+
+If you want the command to generate the blog post some where other than the cwd, use the `-o` option
+```sh
+$ post-commit -o /path/to/jekyll/_posts
+```
 
 Installation as a commit hook
 -----------------------------
