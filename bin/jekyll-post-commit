@@ -3,6 +3,7 @@
 require 'cgi'
 require 'git'
 require 'optparse'
+require 'fileutils'
 
 args = {}
 OptionParser.new do |opts|
@@ -11,6 +12,14 @@ OptionParser.new do |opts|
     opts.on("-c COMMIT", "--commit COMMIT", "Commit hash or HEAD offset. If not set then the latest commit is used.") { |c| args[:commit] = c }
     opts.on("-p PROJECT", "--project PROJECT", "Directory where the .git folder is. If not set then the path to the command is used.") { |p| args[:project] = p }
     opts.on("-o OUTPUT", "--output OUTPUT", "Directory to write the generated file to. If not set then the cwd is used.") { |o| args[:output] = o }
+    opts.on("-i", "--install-hook", "Install this hook into the --project directory") { |o|
+        unless args.key?(:project)
+            puts "No --project directory specified. Please set a project directory to install to.\n"
+            puts opts
+            exit 1
+        end
+        args[:install_hook] = o
+    }
     opts.on("-h", "--help", "Display this help") { |h|
         puts opts
         exit 0
@@ -20,14 +29,27 @@ end.parse!
 # Attempt to find the project root. If it isn't specified and 
 # there is a .git directory in our current path. Hop up until 
 # we get to the same directory level as the .git folder.
-root = File.expand_path(File.dirname(__FILE__))
+root = Dir.pwd
 if args.key?(:project)
-    root = args[:project]
+    root = File.expand_path(args[:project])
 elsif root.include?('/.git')
     root.split('/').reverse.each { |s|
         root += '/..'
         break if s == '.git'
     }
+end
+
+unless Dir.exist?(root + "/.git")
+    puts "No .git directory found. Either use the -p option or execute this command in a project directory."
+    exit 0
+end
+
+# If this is a hook installation then perform that and exit.
+if args.key?(:install_hook)
+    root += "/.git/hooks/post-commit"
+    FileUtils.cp(File.expand_path(__FILE__), root)
+    puts "Successfully installed #{root} hook"
+    exit 0;
 end
 
 git = Git.open(root)
@@ -58,7 +80,7 @@ if !parts.nil? && parts.length >= 3
     title = parts[1].strip
     body = parts[2].strip
 end
-filename = args.key?(:output) ? args[:output] : ''
+filename = args.key?(:output) ? File.expand_path(args[:output]) + '/' : ''
 filename += git.log[0].date.strftime("%Y-%m-%d") + '-' + title.downcase.gsub(' ', '-').gsub(/[^\w-]/, '') + '.md'
 
 puts "Creating Jekyll file #{filename}"
